@@ -31,7 +31,7 @@ open class VersaPlayerControls: View {
     #endif
     
     /// VersaPlayerControlsCoordinator instance
-    public weak var controlsCoordinator: VersaPlayerControlsCoordinator!
+    public weak var controlsCoordinator: VersaPlayerControlsCoordinator?
     
     /// VersaStatefulButton instance to represent the play/pause button
     @IBOutlet public weak var playPauseButton: VersaStatefulButton? = nil
@@ -89,7 +89,7 @@ open class VersaPlayerControls: View {
     #if os(macOS)
     
     open override func touchesBegan(with event: NSEvent) {
-        behaviour.hide()
+        behaviour?.hide()
     }
     
     override open func viewDidMoveToSuperview() {
@@ -150,7 +150,7 @@ open class VersaPlayerControls: View {
     
     /// Remove coordinator from player
     open func removeFromPlayer() {
-        controlsCoordinator.removeFromSuperview()
+        controlsCoordinator?.removeFromSuperview()
     }
     
     /// Prepare controls targets and notification listeners
@@ -343,7 +343,7 @@ open class VersaPlayerControls: View {
         let value = sender.doubleValue
         let time = CMTime(seconds: value, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         handler.player.seek(to: time)
-        behaviour.update(with: time.seconds)
+        behaviour?.update(with: time.seconds)
     }
     
     #elseif os(iOS)
