@@ -16,7 +16,7 @@ import Foundation
 open class VersaPlayerControlsBehaviour {
     
     /// VersaPlayerControls instance being controlled
-    public weak var controls: VersaPlayerControls!
+    public weak var controls: VersaPlayerControls?
     
     /// Whether controls are bieng displayed
     public var showingControls: Bool = true
@@ -62,7 +62,7 @@ open class VersaPlayerControlsBehaviour {
     ///     - time: TimeInterval to check whether to update controls.
     open func update(with time: TimeInterval) {
         elapsedTime = time
-        if showingControls && shouldHideControls && !controls.handler.player.isBuffering && !controls.handler.isSeeking && controls.handler.isPlaying {
+        if showingControls && shouldHideControls && !(controls?.handler.player.isBuffering ?? false) && !(controls?.handler.isSeeking ?? false) && (controls?.handler.isPlaying ?? false) {
             let timediff = elapsedTime - activationTime
             if timediff >= deactivationTimeInterval {
                 hide()
@@ -72,12 +72,12 @@ open class VersaPlayerControlsBehaviour {
     
     /// Default activation block
     open func defaultActivationBlock() {
-        controls.isHidden = false
+        controls?.isHidden = false
         #if os(macOS)
-        controls.alphaValue = 1
+        controls?.alphaValue = 1
         #else
         UIView.animate(withDuration: 0.3) {
-            self.controls.alpha = 1
+            self.controls?.alpha = 1
         }
         #endif
     }
@@ -85,13 +85,13 @@ open class VersaPlayerControlsBehaviour {
     /// Default deactivation block
     open func defaultDeactivationBlock() {
         #if os(macOS)
-        controls.alphaValue = 0
+        controls?.alphaValue = 0
         #else
         UIView.animate(withDuration: 0.3, animations: {
-            self.controls.alpha = 0
+            self.controls?.alpha = 0
         }) {
             if $0 {
-                self.controls.isHidden = true
+                self.controls?.isHidden = true
             }
         }
         #endif
@@ -100,8 +100,8 @@ open class VersaPlayerControlsBehaviour {
     /// Hide the controls
     open func hide() {
         if shouldAutohide {
-          if deactivationBlock != nil {
-                  deactivationBlock!(controls)
+          if let block = deactivationBlock, let c = controls {
+              block(c)
           } else {
               defaultDeactivationBlock()
           }
@@ -117,8 +117,8 @@ open class VersaPlayerControlsBehaviour {
                 return
             }
             activationTime = elapsedTime
-            if activationBlock != nil {
-                activationBlock!(controls)
+            if let block = activationBlock, let c = controls {
+                block(c)
             } else {
                 defaultActivationBlock()
             }

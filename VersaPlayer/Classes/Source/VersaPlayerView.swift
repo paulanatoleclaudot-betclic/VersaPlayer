@@ -283,11 +283,11 @@ open class VersaPlayerView: View, PIPProtocol {
     
     open func pictureInPictureControllerWillStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
         isPipModeEnabled = false
-        controls?.controlsCoordinator.isHidden = false
+        controls?.controlsCoordinator?.isHidden = false
     }
     
     open func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
-        controls?.controlsCoordinator.isHidden = true
+        controls?.controlsCoordinator?.isHidden = true
         isPipModeEnabled = true
     }
     

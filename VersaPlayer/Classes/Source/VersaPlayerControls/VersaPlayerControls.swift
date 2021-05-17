@@ -24,14 +24,14 @@ open class VersaPlayerControls: View {
     public weak var handler: VersaPlayerView!
     
     /// VersaPlayerControlsBehaviour being used to validate ui
-    public var behaviour: VersaPlayerControlsBehaviour!
+    public var behaviour: VersaPlayerControlsBehaviour?
     
     #if os(iOS)
     public var airplayButton: MPVolumeView? = nil
     #endif
     
     /// VersaPlayerControlsCoordinator instance
-    public weak var controlsCoordinator: VersaPlayerControlsCoordinator!
+    public weak var controlsCoordinator: VersaPlayerControlsCoordinator?
     
     /// VersaStatefulButton instance to represent the play/pause button
     @IBOutlet public weak var playPauseButton: VersaStatefulButton? = nil
@@ -89,7 +89,7 @@ open class VersaPlayerControls: View {
     #if os(macOS)
     
     open override func touchesBegan(with event: NSEvent) {
-        behaviour.hide()
+        behaviour?.hide()
     }
     
     override open func viewDidMoveToSuperview() {
@@ -100,7 +100,7 @@ open class VersaPlayerControls: View {
     #else
     
     open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        behaviour.hide()
+        behaviour?.hide()
     }
     
     open override func didMoveToSuperview() {
@@ -130,7 +130,7 @@ open class VersaPlayerControls: View {
         setSeekbarSlider(start: handler.player.startTime().seconds, end: handler.player.endTime().seconds, at: time.seconds)
         
         if !(handler.isSeeking || handler.isRewinding || handler.isForwarding) {
-            behaviour.update(with: time.seconds)
+            behaviour?.update(with: time.seconds)
         }
     }
     
@@ -150,7 +150,7 @@ open class VersaPlayerControls: View {
     
     /// Remove coordinator from player
     open func removeFromPlayer() {
-        controlsCoordinator.removeFromSuperview()
+        controlsCoordinator?.removeFromSuperview()
     }
     
     /// Prepare controls targets and notification listeners
@@ -343,7 +343,7 @@ open class VersaPlayerControls: View {
         let value = sender.doubleValue
         let time = CMTime(seconds: value, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         handler.player.seek(to: time)
-        behaviour.update(with: time.seconds)
+        behaviour?.update(with: time.seconds)
     }
     
     #elseif os(iOS)
@@ -357,7 +357,7 @@ open class VersaPlayerControls: View {
         let value = Double(sender.value)
         let time = CMTime(seconds: value, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
         handler.player.seek(to: time)
-        behaviour.update(with: time.seconds)
+        behaviour?.update(with: time.seconds)
     }
     
     /// Toggle PIP mode
