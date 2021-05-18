@@ -27,7 +27,7 @@ open class VersaPlayerControlsBehaviour {
     /// Whether controls should be shown when showingControls is false
     public var shouldShowControls: Bool = true
     
-    public var shouldAutohide: Bool = false
+    public var shouldAutohide: Bool = true
 
     /// Elapsed time between controls being shown and current time
     public var elapsedTime: TimeInterval = 0
