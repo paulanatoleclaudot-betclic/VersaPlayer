@@ -126,8 +126,8 @@ open class VersaPlayerControls: View {
     ///     - time: CMTime representation of the current playback time
     open func timeDidChange(toTime time: CMTime) {
         currentTimeLabel?.update(toTime: time.seconds)
-        totalTimeLabel?.update(toTime: handler.player.endTime().seconds)
-        setSeekbarSlider(start: handler.player.startTime().seconds, end: handler.player.endTime().seconds, at: time.seconds)
+        totalTimeLabel?.update(toTime: handler.player?.endTime().seconds ?? 0)
+        setSeekbarSlider(start: handler.player?.startTime().seconds ?? 0, end: handler.player?.endTime().seconds ?? 0, at: time.seconds)
         
         if !(handler.isSeeking || handler.isRewinding || handler.isForwarding) {
             behaviour?.update(with: time.seconds)
@@ -135,6 +135,10 @@ open class VersaPlayerControls: View {
     }
     
     public func setSeekbarSlider(start startValue: Double, end endValue: Double, at time: Double) {
+        let time = time.isNaN ? 0 : time
+        let startValue = startValue.isNaN ? 0 : startValue
+        let endValue = endValue.isNaN ? 0 : endValue
+
         #if os(macOS)
         seekbarSlider?.minValue = startValue
         seekbarSlider?.maxValue = endValue
@@ -290,7 +294,7 @@ open class VersaPlayerControls: View {
     
     /// Prepare the seekbar values
     open func prepareSeekbar() {
-        setSeekbarSlider(start: handler.player.startTime().seconds, end: handler.player.endTime().seconds, at: handler.player.currentTime().seconds)
+        setSeekbarSlider(start: handler.player?.startTime().seconds ?? 0, end: handler.player?.endTime().seconds ?? 0, at: handler.player?.currentTime().seconds ?? 0)
     }
     
     /// Show buffering view
@@ -305,14 +309,14 @@ open class VersaPlayerControls: View {
     
     /// Skip forward (n) seconds in time
     @IBAction open func skipForward(sender: Any? = nil) {
-        let time = handler.player.currentTime() + CMTime(seconds: skipSize, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-        handler.player.seek(to: time)
+        let time = (handler.player?.currentTime() ?? .zero) + CMTime(seconds: skipSize, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        handler.player?.seek(to: time)
     }
     
     /// Skip backward (n) seconds in time
     @IBAction open func skipBackward(sender: Any? = nil) {
-        let time = handler.player.currentTime() - CMTime(seconds: skipSize, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-        handler.player.seek(to: time)
+        let time = (handler.player?.currentTime() ?? .zero) - CMTime(seconds: skipSize, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        handler.player?.seek(to: time)
     }
     
     /// End seeking
@@ -356,7 +360,7 @@ open class VersaPlayerControls: View {
         handler.isSeeking = true
         let value = Double(sender.value)
         let time = CMTime(seconds: value, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-        handler.player.seek(to: time)
+        handler.player?.seek(to: time)
         behaviour?.update(with: time.seconds)
     }
     
@@ -376,7 +380,7 @@ open class VersaPlayerControls: View {
     /// Toggle playback
     @IBAction open func togglePlayback(sender: Any? = nil) {
         if handler.isRewinding || handler.isForwarding {
-            handler.player.rate = 1
+            handler.player?.rate = 1
             playPauseButton?.set(active: true)
             return;
         }
@@ -384,7 +388,7 @@ open class VersaPlayerControls: View {
             playPauseButton?.set(active: false)
             handler.pause()
         } else {
-            if handler.playbackDelegate?.playbackShouldBegin(player: handler.player) ?? true {
+            if let player = handler.player, handler.playbackDelegate?.playbackShouldBegin(player: player) ?? true {
                 playPauseButton?.set(active: true)
                 handler.play()
             }
@@ -401,10 +405,10 @@ open class VersaPlayerControls: View {
     
     /// Toggle rewind
     @IBAction open func rewindToggle(sender: Any? = nil) {
-        if handler.player.currentItem?.canPlayFastReverse ?? false {
+        if handler.player?.currentItem?.canPlayFastReverse ?? false {
             if handler.isRewinding {
                 rewindButton?.set(active: false)
-                handler.player.rate = 1
+                handler.player?.rate = 1
                 if wasPlayingBeforeRewinding {
                     handler.play()
                 } else {
@@ -417,17 +421,17 @@ open class VersaPlayerControls: View {
                 if !handler.isPlaying {
                     handler.play()
                 }
-                handler.player.rate = -1
+                handler.player?.rate = -1
             }
         }
     }
     
     /// Forward toggle
     @IBAction open func forwardToggle(sender: Any? = nil) {
-        if handler.player.currentItem?.canPlayFastForward ?? false {
+        if handler.player?.currentItem?.canPlayFastForward ?? false {
             if handler.isForwarding {
                 forwardButton?.set(active: false)
-                handler.player.rate = 1
+                handler.player?.rate = 1
                 if wasPlayingBeforeForwarding {
                     handler.play()
                 } else {
@@ -440,7 +444,7 @@ open class VersaPlayerControls: View {
                 if !handler.isPlaying {
                     handler.play()
                 }
-                handler.player.rate = 2
+                handler.player?.rate = 2
             }
         }
     }

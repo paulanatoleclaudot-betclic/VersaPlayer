@@ -31,14 +31,14 @@ public protocol PIPProtocol {}
 open class VersaPlayerView: View, PIPProtocol {
     
     deinit {
-        player.replaceCurrentItem(with: nil)
+        player?.replaceCurrentItem(with: nil)
     }
 
     /// VersaPlayer extension dictionary
     public var extensions: [String: VersaPlayerExtension] = [:]
     
     /// AVPlayer used in VersaPlayer implementation
-    public var player: VersaPlayer!
+    public var player: VersaPlayer?
     
     /// VersaPlayerControls instance being used to display controls
     public var controls: VersaPlayerControls? = nil
@@ -86,12 +86,12 @@ open class VersaPlayerView: View, PIPProtocol {
     
     /// Whether Player is Fast Forwarding
     public var isForwarding: Bool {
-        return player.rate > 1.0
+        return (player?.rate ?? 1.0) > 1.0
     }
     
     /// Whether Player is Rewinding
     public var isRewinding: Bool {
-        return player.rate < 0.0
+        return (player?.rate ?? 0.0) < 0.0
     }
     
     public override init(frame: CGRect) {
@@ -157,8 +157,8 @@ open class VersaPlayerView: View, PIPProtocol {
     open func prepare() {
         ready = true
         player = VersaPlayer()
-        player.handler = self
-        player.preparePlayerPlaybackDelegate()
+        player?.handler = self
+        player?.preparePlayerPlaybackDelegate()
         renderingView = VersaPlayerRenderingView(with: self)
         layout(view: renderingView, into: self)
     }
@@ -239,7 +239,7 @@ open class VersaPlayerView: View, PIPProtocol {
             prepare()
         }
         
-        player.replaceCurrentItem(with: item)
+        player?.replaceCurrentItem(with: item)
         if autoplay && item?.error == nil {
             play()
         }
@@ -247,7 +247,7 @@ open class VersaPlayerView: View, PIPProtocol {
     
     /// Play
     @IBAction open func play(sender: Any? = nil) {
-        if playbackDelegate?.playbackShouldBegin(player: player) ?? true {
+        if let player = player, playbackDelegate?.playbackShouldBegin(player: player) ?? true {
             player.play()
             controls?.playPauseButton?.set(active: true)
             isPlaying = true
@@ -256,7 +256,7 @@ open class VersaPlayerView: View, PIPProtocol {
     
     /// Pause
     @IBAction open func pause(sender: Any? = nil) {
-        player.pause()
+        player?.pause()
         controls?.playPauseButton?.set(active: false)
         isPlaying = false
     }

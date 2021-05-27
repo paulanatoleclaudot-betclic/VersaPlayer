@@ -62,7 +62,7 @@ open class VersaPlayerControlsBehaviour {
     ///     - time: TimeInterval to check whether to update controls.
     open func update(with time: TimeInterval) {
         elapsedTime = time
-        if showingControls && shouldHideControls && !(controls?.handler.player.isBuffering ?? false) && !(controls?.handler.isSeeking ?? false) && (controls?.handler.isPlaying ?? false) {
+        if showingControls && shouldHideControls && !(controls?.handler.player?.isBuffering ?? false) && !(controls?.handler.isSeeking ?? false) && (controls?.handler.isPlaying ?? false) {
             let timediff = elapsedTime - activationTime
             if timediff >= deactivationTimeInterval {
                 hide()
