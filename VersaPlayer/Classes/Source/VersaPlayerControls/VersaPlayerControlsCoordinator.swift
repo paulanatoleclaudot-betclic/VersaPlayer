@@ -17,13 +17,13 @@ import AVFoundation
 open class VersaPlayerControlsCoordinator: View, VersaPlayerGestureRecieverViewDelegate {
 
     /// VersaPlayer instance being used
-    weak var player: VersaPlayerView!
+    weak var player: VersaPlayerView?
     
     /// VersaPlayerControls instance being used
-    weak public var controls: VersaPlayerControls!
+    weak public var controls: VersaPlayerControls?
     
     /// VersaPlayerGestureRecieverView instance being used
-    public var gestureReciever: VersaPlayerGestureRecieverView!
+    public var gestureReciever: VersaPlayerGestureRecieverView?
 
     deinit {
         
@@ -58,11 +58,11 @@ open class VersaPlayerControlsCoordinator: View, VersaPlayerGestureRecieverViewD
     public func configureView() {
         if let h = superview as? VersaPlayerView {
             player = h
-            if controls != nil {
+            if let controls = controls {
                 addSubview(controls)
             }
             if gestureReciever == nil {
-                gestureReciever = VersaPlayerGestureRecieverView()
+                let gestureReciever = VersaPlayerGestureRecieverView()
                 gestureReciever.delegate = self
                 #if os(macOS)
                 addSubview(gestureReciever, positioned: NSWindow.OrderingMode.below, relativeTo: nil)
@@ -70,6 +70,7 @@ open class VersaPlayerControlsCoordinator: View, VersaPlayerGestureRecieverViewD
                 addSubview(gestureReciever)
                 sendSubviewToBack(gestureReciever)
                 #endif
+                self.gestureReciever = gestureReciever
             }
             stretchToEdges()
         }
@@ -98,10 +99,11 @@ open class VersaPlayerControlsCoordinator: View, VersaPlayerGestureRecieverViewD
     /// - Parameters:
     ///     - point: CGPoint at which tap was recognized
     open func didTap(at point: CGPoint) {
-        if controls.behaviour.showingControls {
-            controls.behaviour.hide()
+        guard let behaviour = controls?.behaviour else { return }
+        if behaviour.showingControls {
+            behaviour.hide()
         }else {
-            controls.behaviour.show()
+            behaviour.show()
         }
     }
     
@@ -110,10 +112,11 @@ open class VersaPlayerControlsCoordinator: View, VersaPlayerGestureRecieverViewD
     /// - Parameters:
     ///     - point: CGPoint at which tap was recognized
     open func didDoubleTap(at point: CGPoint) {
-        if player.renderingView.playerLayer.videoGravity == AVLayerVideoGravity.resizeAspect {
-            player.renderingView.playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        guard let playerLayer = player?.renderingView.playerLayer else { return }
+        if playerLayer.videoGravity == AVLayerVideoGravity.resizeAspect {
+            playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         }else {
-            player.renderingView.playerLayer.videoGravity = AVLayerVideoGravity.resizeAspect
+            playerLayer.videoGravity = AVLayerVideoGravity.resizeAspect
         }
     }
     
